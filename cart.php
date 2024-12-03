@@ -34,8 +34,7 @@ function handleGet($conn){
     $sql = "SELECT cart.id, product.name AS product_name, product.price, cart.quantity, 
     (product.price * cart.quantity) AS total_price
 FROM cart
-INNER JOIN product ON cart.product_id = product.id"
-;
+INNER JOIN product ON cart.product_id = product.id";
 
 $result = mysqli_query($conn, $sql);
 
