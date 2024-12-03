@@ -52,6 +52,38 @@ echo json_encode(["status" => "fail", "message" => "No records found."]);
 echo json_encode(["status" => "fail", "message" => "Failed to fetch product data.", "error" => mysqli_error($conn)]);
 }
 }
+if ($method == "DELETE") {
+    handleDelete($conn, $_GET);
+}
+
+function handleDelete($conn, $id)
+{
+
+    if (isset($_GET['id']) && intval($_GET['id']) > 0) {
+        $id = intval($_GET['id']);
+
+        $checkselect="Select * from cart where id=$id";
+        $result=mysqli_query($conn,$checkselect);
+
+        if($result && mysqli_num_rows($result)>0){
+            $sql = "DELETE FROM cart WHERE id=$id";
+
+
+            if (mysqli_query($conn, $sql)) {
+                echo json_encode(['status'=>'success','message' => 'User deleted successfully']);
+            } else {
+                echo json_encode(['status'=>'fail','message' => 'Failed to delete user', 'error' => mysqli_error($conn)]);
+            }
+        }
+        else{
+            echo json_encode(["status"=>"fail","message"=>"user not found"]);
+        }
+       
+    } else {
+        echo json_encode(["status"=>'fail','message' => 'Invalid or missing ID in the request']);
+    }
+}
+
 ?>
 
 

@@ -71,4 +71,43 @@ function handlePost($conn){
 }
 
 
+
+if ($method == "DELETE") {
+    handleDelete($conn, $_GET);
+}
+
+function handleDelete($conn, $id) {
+    if (isset($_GET['id']) && intval($_GET['id']) > 0) {
+        $id = intval($_GET['id']);
+
+        
+        $checkSelect = "SELECT * FROM product WHERE id = $id";
+        $result = mysqli_query($conn, $checkSelect);
+
+        if ($result && mysqli_num_rows($result) > 0) {
+        
+            $checkOrderDetails = "SELECT * FROM order_details WHERE product_id = $id";
+            $orderResult = mysqli_query($conn, $checkOrderDetails);
+
+            if ($orderResult && mysqli_num_rows($orderResult) > 0) {
+                
+                echo json_encode(["status" => "fail", "message" => "Product is already add of an order and cannot be deleted."]);
+            } else {
+                
+                $sql = "DELETE FROM product WHERE id = $id";
+
+                if (mysqli_query($conn, $sql)) {
+                    echo json_encode(['status' => 'success', 'message' => 'Product deleted successfully']);
+                } else {
+                    echo json_encode(['status' => 'fail', 'message' => 'Failed to delete product', 'error' => mysqli_error($conn)]);
+                }
+            }
+        } else {
+            echo json_encode(["status" => "fail", "message" => "Product not found"]);
+        }
+    } else {
+        echo json_encode(["status" => 'fail', 'message' => 'Invalid or missing ID in the request']);
+    }
+}
 ?>
+

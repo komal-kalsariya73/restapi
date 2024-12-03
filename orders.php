@@ -72,10 +72,11 @@ function handleCreateOrder($conn) {
 
 if ($method == "GET") {
     handleGet($conn);
+    // handleGetorder($conn);
 }
 
 function handleGet($conn) {
-    $sql = "SELECT o.id,o.first_name,o.last_name,o.address,o.total,od.quantity
+    $sql = "SELECT o.id,o.order_date,o.first_name,o.last_name,o.address,o.total,od.quantity
     from orders o
     join order_details od
     ON o.cart_id=od.cart_id";
@@ -85,6 +86,26 @@ function handleGet($conn) {
         $data = [];
         while ($row = mysqli_fetch_assoc($result)) {
             $data[] = $row;
+        }
+        echo json_encode(["status" => "success", "data" => $data]);
+    } else {
+        echo json_encode(["status" => "fail", "message" => "Failed to fetch order details.", "error" => mysqli_error($conn)]);
+    }
+}
+
+function handleGetorder($conn){
+    $sql="select o.id,o.order_date,od.quantity,product.name,od.total_price
+    from orders o
+    join order_details od 
+    ON o.id=od.cart_id
+    join product ON od.product_id=product.id
+    order by o.order_date desc ";
+
+    $result=mysqli_query($conn,$sql);
+    if($result){
+        $data=[];
+        while($row=mysqli_fetch_assoc($result)){
+            $data[]=$row;
         }
         echo json_encode(["status" => "success", "data" => $data]);
     } else {
